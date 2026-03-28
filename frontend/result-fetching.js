@@ -18,7 +18,7 @@
     MAX_POLL_DURATION: 120000, // 2 хв на весь цикл
     POLL_INTERVAL: 5000, // 5 с між опитуваннями
     FETCH_TIMEOUT: 15000, // 15 с таймаут окремого запиту
-    API_BASE: "https://nasasom-ce245d63159c.herokuapp.com",
+    API_BASE: "https://nasa-exoplanet-api.onrender.com",
   };
 
   let pollInterval = null;
@@ -54,12 +54,12 @@
   async function tryFetch(
     url,
     opts = {},
-    timeoutMs = POLLING_CONFIG.FETCH_TIMEOUT
+    timeoutMs = POLLING_CONFIG.FETCH_TIMEOUT,
   ) {
     return await Promise.race([
       fetch(url, opts),
       new Promise((_, rej) =>
-        setTimeout(() => rej(new Error("Fetch timeout")), timeoutMs)
+        setTimeout(() => rej(new Error("Fetch timeout")), timeoutMs),
       ),
     ]);
   }
@@ -115,7 +115,7 @@
     const baseTemp = 1400 / (parseFloat(semiMajorAxis) + 0.1);
     const tempVariation = (getRandom() - 0.5) * 400;
     const eqTemperature = Math.round(
-      Math.max(500, Math.min(2000, baseTemp + tempVariation))
+      Math.max(500, Math.min(2000, baseTemp + tempVariation)),
     );
 
     // Остальные параметры могут быть фиксированными или вычисленными
@@ -202,7 +202,7 @@
     set("result_object_id", String(objectId));
     set(
       "resultPercent",
-      Number.isFinite(percent) ? `${percent}%` : String(percent || "—")
+      Number.isFinite(percent) ? `${percent}%` : String(percent || "—"),
     );
     if (Number.isFinite(radius))
       set("result_planet_radius", `${fmt(radius, 2)} R⊕`);
@@ -224,7 +224,7 @@
     // опціональна нотифікація для інших слухачів
     try {
       document.dispatchEvent(
-        new CustomEvent("analysis:complete", { detail: result })
+        new CustomEvent("analysis:complete", { detail: result }),
       );
     } catch {}
   }
@@ -271,10 +271,10 @@
         console.log(`🔍 Poll attempt ${attempt}`);
         const res = await tryFetch(
           `${POLLING_CONFIG.API_BASE}/analysis/${encodeURIComponent(
-            analysisId
+            analysisId,
           )}`,
           { method: "GET" },
-          POLLING_CONFIG.FETCH_TIMEOUT
+          POLLING_CONFIG.FETCH_TIMEOUT,
         );
 
         if (res.status === 202) {
@@ -330,4 +330,3 @@
   window.showTimeoutState = showTimeoutState;
   window.updateWaitingTime = updateWaitingTime;
 })();
-
