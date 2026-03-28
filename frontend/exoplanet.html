@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Екзопланета</title>
+    <style>
+      body {
+        margin: 0;
+        background: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: "Trebuchet MS", sans-serif;
+        color: white;
+      }
+      canvas {
+        border-radius: 10px;
+      }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      canvas {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      body {
+        margin: 0;
+        background: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="1000" height="600"></canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      function interpolateColors(color1, color2, steps) {
+        const c1 = parseInt(color1.slice(1), 16);
+        const c2 = parseInt(color2.slice(1), 16);
+        const r1 = (c1 >> 16) & 0xff,
+          g1 = (c1 >> 8) & 0xff,
+          b1 = c1 & 0xff;
+        const r2 = (c2 >> 16) & 0xff,
+          g2 = (c2 >> 8) & 0xff,
+          b2 = c2 & 0xff;
+        const arr = [];
+        for (let i = 0; i < steps; i++) {
+          const t = i / (steps - 1);
+          const r = Math.round(r1 + (r2 - r1) * t);
+          const g = Math.round(g1 + (g2 - g1) * t);
+          const b = Math.round(b1 + (b2 - b1) * t);
+          arr.push(
+            `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`
+          );
+        }
+        return arr;
+      }
+
+      function buildColorPalette(temp, isEarth = false) {
+        if (isEarth) {
+          const blueColors = ["#1E90FF", "#1C86EE", "#4682B4"];
+          const greenColors = ["#00FA9A", "#228B22", "#32CD32"];
+          return { blue: blueColors, green: greenColors };
+        } else {
+          let baseColors;
+          if (temp < 200) baseColors = ["#191970", "#00008B", "#1E90FF"];
+          else if (temp < 400)
+            baseColors = ["#1E90FF", "#4169E1", "#4682B4", "#5F9EA0"];
+          else if (temp < 600)
+            baseColors = ["#006400", "#008000", "#2E8B57", "#20B2AA"];
+          else if (temp < 800) {
+            // Нові локанічні та реалістичні кольори для діапазону 600-800K
+            baseColors = ["#556B2F", "#6B8E23", "#BDB76B", "#DAA520"]; // оливково-зелений → пастельний жовтий
+          } else if (temp < 1000)
+            baseColors = ["#FFD700", "#FFA500", "#FFA07A", "#F0E68C"];
+          else if (temp < 1200)
+            baseColors = ["#FF8C00", "#FF6347", "#FF4500", "#FF7F50"];
+          else if (temp < 1500) baseColors = ["#FF4500", "#FF0000", "#B22222"];
+          else if (temp < 1800) baseColors = ["#B22222", "#8B0000", "#800000"];
+          else if (temp < 2200) baseColors = ["#800000", "#5C0000", "#4B0000"];
+          else baseColors = ["#4B0000", "#3E0000", "#330000", "#280000"];
+
+          let palette = [];
+          for (let i = 0; i < baseColors.length - 1; i++) {
+            palette = palette.concat(
+              interpolateColors(baseColors[i], baseColors[i + 1], 5).slice(0, 4)
+            );
+          }
+          palette.push(baseColors[baseColors.length - 1]);
+          return palette;
+        }
+      }
+
+      function drawPatchyPlanet(
+        ctx,
+        x,
+        y,
+        r,
+        temp,
+        label,
+        data,
+        isEarth = false
+      ) {
+        if (isEarth) {
+          const palette = buildColorPalette(temp, true);
+
+          ctx.shadowBlur = 1.4 * r;
+          ctx.shadowColor = palette.blue[0];
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, 2 * Math.PI);
+          ctx.fillStyle = palette.blue[0];
+          ctx.fill();
+          ctx.shadowBlur = 0;
+
+          for (let i = 0; i < palette.blue.length; i++) {
+            ctx.fillStyle = palette.blue[i];
+            for (let p = 0; p < 100; p++) {
+              const angle = Math.random() * 2 * Math.PI;
+              const dist = Math.sqrt(Math.random()) * r;
+              ctx.beginPath();
+              ctx.arc(
+                x + dist * Math.cos(angle),
+                y + dist * Math.sin(angle),
+                r * 0.1 * Math.random(),
+                0,
+                2 * Math.PI
+              );
+              ctx.fill();
+            }
+          }
+
+          for (let i = 0; i < palette.green.length; i++) {
+            ctx.fillStyle = palette.green[i];
+            for (let p = 0; p < 40; p++) {
+              const angle = Math.random() * 2 * Math.PI;
+              const dist = Math.sqrt(Math.random()) * r;
+              ctx.beginPath();
+              ctx.arc(
+                x + dist * Math.cos(angle),
+                y + dist * Math.sin(angle),
+                r * 0.1 * Math.random(),
+                0,
+                2 * Math.PI
+              );
+              ctx.fill();
+            }
+          }
+        } else {
+          const palette = buildColorPalette(temp, false);
+
+          const glow = 1.4 * r + temp / 500;
+          ctx.shadowBlur = glow;
+          ctx.shadowColor = palette[0];
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, 2 * Math.PI);
+          ctx.fillStyle = palette[0];
+          ctx.fill();
+          ctx.shadowBlur = 0;
+
+          for (let i = 0; i < palette.length; i++) {
+            ctx.fillStyle = palette[i];
+            for (let p = 0; p < 25; p++) {
+              const angle = Math.random() * 2 * Math.PI;
+              const dist = Math.sqrt(Math.random()) * r;
+              ctx.beginPath();
+              ctx.arc(
+                x + dist * Math.cos(angle),
+                y + dist * Math.sin(angle),
+                r * 0.1 * Math.random(),
+                0,
+                2 * Math.PI
+              );
+              ctx.fill();
+            }
+          }
+        }
+
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2 * Math.PI);
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.fillStyle = "white";
+        ctx.font = "bold 18px Trebuchet MS";
+        ctx.textAlign = "center";
+        ctx.fillText(label, x, y - r - 20);
+        ctx.font = "14px Trebuchet MS";
+        let offsetY = 25;
+        data.forEach((line) => {
+          ctx.fillText(line, x, y + r + offsetY);
+          offsetY += 18;
+        });
+      }
+
+      function drawComparison(planet) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < 200; i++) {
+          ctx.fillStyle = "white";
+          ctx.fillRect(
+            Math.random() * canvas.width,
+            Math.random() * canvas.height,
+            1,
+            1
+          );
+        }
+
+        const earthBase = 1;
+        const exoBase = planet.radius;
+        const maxR = 100;
+        const scale = maxR / Math.max(earthBase, exoBase);
+        const earthR = earthBase * scale;
+        const exoR = exoBase * scale;
+        const earthX = canvas.width * 0.25;
+        const exoX = canvas.width * 0.75;
+        const centerY = canvas.height / 2;
+
+        drawPatchyPlanet(
+          ctx,
+          earthX,
+          centerY,
+          earthR,
+          288,
+          "Земля",
+          [
+            "Радіус: 1 R⊕",
+            "Відстань: 1 AU",
+            "Період: 365 днів",
+            "Температура: 288K",
+          ],
+          true
+        );
+
+        drawPatchyPlanet(ctx, exoX, centerY, exoR, planet.temp, "Екзопланета", [
+          `Радіус: ${planet.radius.toFixed(2)} R⊕`,
+          `Відстань при транзиті: ${planet.transitDist} AU`,
+          `Середня відстань: ${planet.avgDist} AU`,
+          `Температура: ${planet.temp}K`,
+        ]);
+      }
+
+      function num(v, fallback) {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : fallback;
+      }
+
+      const qp = new URLSearchParams(location.search);
+      const planetRadius = num(qp.get("radius"), 1.66); // R⊕
+      const transitDist = num(qp.get("transitDist"), 0.5); // AU (дистанція під час транзиту, якщо є)
+      const avgDist = num(qp.get("avgDist"), 1.096); // AU (середня)
+      const period = num(qp.get("period"), 120); // днів
+      const temp = num(qp.get("temp"), 1286); // K
+
+      const myPlanet = {
+        radius: planetRadius,
+        transitDist: transitDist,
+        period: period,
+        temp: temp,
+        avgDist: avgDist,
+      };
+
+      drawComparison(myPlanet);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Exoplanet Indification</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="header">
+        <div class="header-content">
+          <h1 class="page-title">Exoplanet Indification</h1>
+        </div>
+      </header>
+
+      <main class="main-content">
+        <div class="content-card">
+          <section class="input-section">
+            <h2 class="section-title">Observation input</h2>
+
+            <button class="sample-data-btn" id="fillSampleData" type="button">
+              <span class="btn-icon">⚡</span> Quick Fill Sample Data
+            </button>
+
+            <form id="observationForm" class="observation-form">
+              <div class="form-field">
+                <label for="object_id">
+                  Object ID
+                  <span
+                    class="tooltip"
+                    data-tooltip="Unique identifier for the candidate object. Alphanumeric, hyphens and underscores allowed. Max 64 characters."
+                    >ⓘ</span
+                  >
+                </label>
+                <input
+                  type="text"
+                  id="object_id"
+                  name="object_id"
+                  maxlength="64"
+                  required
+                  aria-describedby="object_id_error"
+                />
+                <span class="error-message" id="object_id_error"></span>
+              </div>
+
+              <div class="form-field">
+                <label for="transit_depth">
+                  Transit Depth (%)
+                  <span
+                    class="tooltip"
+                    data-tooltip="Percentage decrease in stellar brightness during transit. Range: 0-100%."
+                    >ⓘ</span
+                  >
+                </label>
+                <input
+                  type="number"
+                  id="transit_depth"
+                  name="transit_depth"
+                  step="0.000001"
+                  min="0"
+                  max="100"
+                  required
+                  aria-describedby="transit_depth_error"
+                />
+                <span class="error-message" id="transit_depth_error"></span>
+              </div>
+
+              <div class="form-field">
+                <label for="orbital_period">
+                  Orbital Period (days)
+                  <span
+                    class="tooltip"
+                    data-tooltip="Time for one complete orbit around the star. Must be positive."
+                    >ⓘ</span
+                  >
+                </label>
+                <input
+                  type="number"
+                  id="orbital_period"
+                  name="orbital_period"
+                  step="0.001"
+                  min="0.001"
+                  required
+                  aria-describedby="orbital_period_error"
+                />
+                <span class="error-message" id="orbital_period_error"></span>
+              </div>
+
+              <div class="form-field">
+                <label for="transit_duration">
+                  Transit Duration (hours)
+                  <span
+                    class="tooltip"
+                    data-tooltip="Duration of the transit event. Must be positive."
+                    >ⓘ</span
+                  >
+                </label>
+                <input
+                  type="number"
+                  id="transit_duration"
+                  name="transit_duration"
+                  step="0.001"
+                  min="0.01"
+                  required
+                  aria-describedby="transit_duration_error"
+                />
+                <span class="error-message" id="transit_duration_error"></span>
+              </div>
+
+              <div class="form-field">
+                <label for="snr">
+                  Signal-to-Noise Ratio
+                  <span
+                    class="tooltip"
+                    data-tooltip="Quality measure of the detection. Must be positive."
+                    >ⓘ</span
+                  >
+                </label>
+                <input
+                  type="number"
+                  id="snr"
+                  name="snr"
+                  step="0.01"
+                  min="0.1"
+                  required
+                  aria-describedby="snr_error"
+                />
+                <span class="error-message" id="snr_error"></span>
+              </div>
+
+              <div class="form-field">
+                <label for="stellar_radius">
+                  Stellar Radius (R☉)
+                  <span
+                    class="tooltip"
+                    data-tooltip="Radius of the host star in solar radii. Must be positive."
+                    >ⓘ</span
+                  >
+                </label>
+                <input
+                  type="number"
+                  id="stellar_radius"
+                  name="stellar_radius"
+                  step="0.001"
+                  min="0.01"
+                  required
+                  aria-describedby="stellar_radius_error"
+                />
+                <span class="error-message" id="stellar_radius_error"></span>
+              </div>
+
+              <div class="form-field">
+                <label for="stellar_mass">
+                  Stellar Mass (M☉)
+                  <span
+                    class="tooltip"
+                    data-tooltip="Mass of the host star in solar masses. Must be positive."
+                    >ⓘ</span
+                  >
+                </label>
+                <input
+                  type="number"
+                  id="stellar_mass"
+                  name="stellar_mass"
+                  step="0.001"
+                  min="0.01"
+                  required
+                  aria-describedby="stellar_mass_error"
+                />
+                <span class="error-message" id="stellar_mass_error"></span>
+              </div>
+
+              <div class="form-field">
+                <label for="stellar_temp">
+                  Stellar Temperature (K)
+                  <span
+                    class="tooltip"
+                    data-tooltip="Effective temperature of the host star in Kelvin. Range: 2500-50000 K."
+                    >ⓘ</span
+                  >
+                </label>
+                <input
+                  type="number"
+                  id="stellar_temp"
+                  name="stellar_temp"
+                  step="1"
+                  min="2500"
+                  max="50000"
+                  required
+                  aria-describedby="stellar_temp_error"
+                />
+                <span class="error-message" id="stellar_temp_error"></span>
+              </div>
+
+              <div class="form-field">
+                <label for="stellar_magnitude">
+                  Stellar Magnitude
+                  <span
+                    class="tooltip"
+                    data-tooltip="V-band apparent magnitude of the host star. Typical range: -10 to +30."
+                    >ⓘ</span
+                  >
+                </label>
+                <input
+                  type="number"
+                  id="stellar_magnitude"
+                  name="stellar_magnitude"
+                  step="0.001"
+                  min="-10"
+                  max="30"
+                  required
+                  aria-describedby="stellar_magnitude_error"
+                />
+                <span class="error-message" id="stellar_magnitude_error"></span>
+              </div>
+
+              <button type="submit" id="submitBtn" class="primary-btn" disabled>
+                <span class="btn-text">Analyze</span>
+                <span class="spinner" style="display: none"></span>
+              </button>
+            </form>
+          </section>
+
+          <section
+            class="results-section"
+            id="resultsSection"
+            style="display: none"
+          >
+            <h2 class="section-title">Analysis results</h2>
+
+            <div id="resultsContent">
+              <div class="waiting-state" id="waitingState">
+                <div class="spinner-large"></div>
+                <p class="waiting-text">Waiting for AI results...</p>
+                <p class="waiting-timestamp" id="waitingTimestamp"></p>
+              </div>
+
+              <div
+                class="results-display"
+                id="resultsDisplay"
+                style="display: none"
+              >
+                <div class="result-highlight">
+                  <div class="result-percent-label">Confidence</div>
+                  <div class="result-percent-value" id="resultPercent">--</div>
+                </div>
+
+                <table class="results-table">
+                  <tbody>
+                    <tr>
+                      <th>Object ID</th>
+                      <td id="result_object_id">--</td>
+                    </tr>
+                    <tr>
+                      <th>Planet Radius</th>
+                      <td id="result_planet_radius">--</td>
+                    </tr>
+                    <tr>
+                      <th>Semi-Major Axis</th>
+                      <td id="result_semi_major_axis">--</td>
+                    </tr>
+                    <tr>
+                      <th>Equilibrium Temperature</th>
+                      <td id="result_eq_temperature">--</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div
+                id="exoplanetSection"
+                style="display: none; margin-top: 2rem"
+              >
+                <iframe
+                  id="exoplanetFrame"
+                  src=""
+                  width="100%"
+                  style="
+                    border: 0;
+                    border-radius: 12px;
+                    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+                    background: black;
+                  "
+                ></iframe>
+              </div>
+              <div
+                class="timeout-state"
+                id="timeoutState"
+                style="display: none"
+              >
+                <p class="timeout-text">
+                  No result yet. We will continue processing — check back, or
+                  re-submit.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <p>Created by KPI_IASA_SOM</p>
+      </footer>
+    </div>
+
+    <script src="form-submission.js"></script>
+    <script src="result-fetching.js"></script>
+  </body>
+</html>
+
